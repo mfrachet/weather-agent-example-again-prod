@@ -1,9 +1,17 @@
-import { openai } from '@ai-sdk/openai';
-import { Agent } from '@mastra/core/agent';
-import { weatherTool } from '../tools';
+import { openai } from "@ai-sdk/openai";
+import { Agent } from "@mastra/core/agent";
+import { weatherTool } from "../tools";
+import { Memory } from "@mastra/memory";
+import { LibSQLStore } from "@mastra/libsql";
+
+const memory = new Memory({
+  storage: new LibSQLStore({
+    url: "file:../../memory.db",
+  }),
+});
 
 export const weatherAgent = new Agent({
-  name: 'Weather Agent',
+  name: "Weather Agent",
   instructions: `
       You are a helpful weather assistant that provides accurate weather information.
 
@@ -18,4 +26,5 @@ export const weatherAgent = new Agent({
 `,
   model: openai(process.env.MODEL ?? "gpt-4.1"),
   tools: { weatherTool },
+  memory,
 });
